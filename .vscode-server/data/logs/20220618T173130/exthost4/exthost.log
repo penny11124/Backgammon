@@ -1,0 +1,23 @@
+[2022-06-18 17:33:15.724] [exthost] [info] Extension host with pid 370 started
+[2022-06-18 17:33:15.753] [exthost] [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: true, activationEvent: '*'
+[2022-06-18 17:33:15.761] [exthost] [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*'
+[2022-06-18 17:33:15.766] [exthost] [info] ExtensionService#_doActivateExtension vscode.ipynb, startup: true, activationEvent: '*'
+[2022-06-18 17:33:15.823] [exthost] [info] Lock '/home/peijen/.vscode-server/data/User/workspaceStorage/32df426cb7af36a347ed6120fb7ec54c/vscode.lock': Lock acquired.
+[2022-06-18 17:33:15.843] [exthost] [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+[2022-06-18 17:33:15.878] [exthost] [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onStartupFinished'
+[2022-06-18 17:33:15.898] [exthost] [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+[2022-06-18 17:33:15.905] [exthost] [info] Eager extensions activated
+[2022-06-18 17:33:16.799] [exthost] [info] ExtensionService#_doActivateExtension vscode.git, startup: false, activationEvent: 'api', root cause: vscode.github
+[2022-06-18 17:33:17.633] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:22.650] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:28.239] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:28.934] [exthost] [info] ExtensionService#_doActivateExtension vscode.extension-editing, startup: false, activationEvent: 'onLanguage:markdown'
+[2022-06-18 17:33:28.957] [exthost] [info] ExtensionService#_doActivateExtension vscode.markdown-language-features, startup: false, activationEvent: 'onLanguage:markdown'
+[2022-06-18 17:33:29.175] [exthost] [info] ExtensionService#_doActivateExtension vscode.markdown-math, startup: false, activationEvent: 'api', root cause: vscode.markdown-language-features
+[2022-06-18 17:33:33.844] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:39.458] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:45.031] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:50.614] [exthost] [warning] [Decorations] CAPPING events from decorations provider vscode.git 1815
+[2022-06-18 17:33:53.775] [exthost] [info] Extension host terminating: received terminate message from renderer
+[2022-06-18 17:33:53.776] [exthost] [info] Lock '/home/peijen/.vscode-server/data/User/workspaceStorage/32df426cb7af36a347ed6120fb7ec54c/vscode.lock': Marking the lockfile as scheduled to be released in 6000 ms.
+[2022-06-18 17:33:53.791] [exthost] [info] Extension host with pid 370 exiting with code 0
