@@ -86,7 +86,7 @@ void write_valid_spot(std::ofstream& fout) {
         if (board[x][y] == EMPTY) {
             fout << x << " " << y << std::endl;     
             // Remember to flush the output to ensure the last action is written to file.
-            fout.flush();
+            fout.flush();//hi
         }
         piece++;
     }
