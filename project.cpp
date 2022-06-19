@@ -4,6 +4,8 @@
 #include <ctime>
 #include <array>
 #include <map>
+#define max(a,b) (a > b ? a : b)
+#define min(a,b) (a < b ? a : b)
 const int INF=10000000000;
 
 enum SPOT_STATE {
@@ -65,13 +67,28 @@ int evaluate() {
     }
     for(int i=-10;i<=10;i++) {
         for(int k=0;k<10;k++) {
-            int my_dal;
+            int my_rdal,my_ldal,other_rdal,other_ldal;
             for(int j=0;j<5;j++) {
-                my_dal+=myAI[k+j][k+i]*(1<<(4-j));
+                my_rdal+=myAI[k+j][k+i]*(1<<(4-j));
+                other_rdal+=otherAI[k+j][k+i]*(1<<(4-j));
             }
-            my_value+=hash5[my_dal];
+            my_value+=hash5[my_rdal];
+            other_value+=hash5[other_rdal];
         }        
     }
+    for(int i=-10;i<=10;i++) {
+        for(int k=0;k<10;k++) {
+            int my_rdal,my_ldal,other_rdal,other_ldal;
+            for(int j=0;j<5;j++) {
+                my_rdal+=myAI[k+j][k+i]*(1<<(4-j));
+                other_rdal+=otherAI[k+j][k+i]*(1<<(4-j));
+            }
+            my_value+=hash5[my_rdal];
+            other_value+=hash5[other_rdal];
+        }        
+    }
+
+    return my_value-other_value;
 }
 int alphabeta(std::array<std::array<int, SIZE>, SIZE> board,int depth,int alpha,int beta,bool maximizingPlayer) {
     if(depth==0 || piece+depth>225) return evaluate();
