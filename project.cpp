@@ -6,7 +6,7 @@
 #include <map>
 #define max(a,b) (a > b ? a : b)
 #define min(a,b) (a < b ? a : b)
-const int INF=10000000000;
+const int INF=1000000000;
 
 enum SPOT_STATE {
     EMPTY = 0,
@@ -17,14 +17,52 @@ int piece;
 int player;
 const int SIZE = 15;
 std::array<std::array<int, SIZE>, SIZE> board;
-int hash5[32];
-int hash6[64];
-int myAI[15][15]={0},otherAI[15][15]={0}; //方便計分
-int x,y;
-
+int simboard[15][15]={0};
+int x=0,y=0,row,col;
+int hash[255555],hash2[255555];
+int f(int l,int r){
+    if(r>14)
+        return 0;
+    int v=0;
+    for(int i=l;i<=r;i++)
+        v=v*10+simboard[row][i];
+    if(r-l+1==5)
+        return hash2[v];
+    return hash[v];
+}
+int f2(int l,int r){
+    if(r>14)
+        return 0;
+    int v=0,i;
+    for(i=l;i<=r;i++)
+        v=v*10+simboard[i][col];
+    if(r-l+1==5)
+        return hash2[v];
+    return hash[v];
+}
+int f3(int l,int r,int len){//(l,r)->(l+len-1,r+len-1)
+    if(max(l,r)+len-1>14||min(l,r)<0)  
+        return 0;
+    int i,v=0;
+    for(i=0;i<len;i++)
+        v=v*10+simboard[l+i][r+i];
+    if(len==5)
+        return hash2[v];
+    return hash[v];
+}
+int f4(int l,int r,int len){//(l,r)->(l-len,r+len)
+    if(l-len<0||r<0||r+len>14||l>14)
+        return 0;
+    int i,v=0;
+    for(i=0;i<len;i++)
+        v=v*10+simboard[l-i][r+i];
+    if(len==5)
+        return hash2[v];
+    return hash[v];
+}
 bool hasNeighbor(int x,int y) {
-    for(int k=-2;k<=2;k++) {
-        for(int l=-2;l<=2;l++) {
+    for(int k=-1;k<=1;k++) {
+        for(int l=-1;l<=1;l++) {
             if(k==0 && l==0) continue;
             if(x+k>=0 && x+k<15 && y+l>=0 && y+l<15)
                 if(board[x+k][y+l]!=EMPTY) return true;
@@ -38,59 +76,80 @@ void read_board(std::ifstream& fin) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             fin >> board[i][j];
-            if(board[i][j]==player) myAI[i][j]=1;
-            else if(board[i][j]==(player==1?2:1)) otherAI[i][j]=1;
+            if(board[i][j]==player) simboard[i][j]=1;
+            else if(board[i][j]==(player==1?2:1)) simboard[i][j]=2;
         }
     }
 }
 
 int evaluate() {
-    int my_value=0,other_value=0;
-    for(int i=0;i<15;i++) {
-        int my_row=myAI[i][0]*16+myAI[i][1]*8+myAI[i][2]*4+myAI[i][3]*2+myAI[i][4];
-        int other_row=otherAI[i][0]*16+otherAI[i][1]*8+otherAI[i][2]*4+otherAI[i][3]*2+otherAI[i][4];
-        int my_col=myAI[0][i]*16+myAI[1][i]*8+myAI[2][i]*4+myAI[3][i]*2+myAI[4][i];
-        int other_col=otherAI[0][i]*16+otherAI[1][i]*8+otherAI[2][i]*4+otherAI[3][i]*2+otherAI[4][i];
-
-        my_value=hash5[my_row]+hash5[my_col];
-        other_value=hash5[other_row]+hash5[other_col];
-
-        for(int j=5;j<15;j++) {
-            my_row=((my_row-myAI[i][j-5]*16)*2+myAI[i][j]); //橫
-            other_row=((other_row-otherAI[i][j-5]*16)*2+otherAI[i][j]);
-            my_col=((my_col-myAI[j-5][i]*16)*2+myAI[j][i]); //豎
-            other_col=((other_col-otherAI[j-5][i]*16)*2+myAI[j][i]);
-
-            my_value+=hash5[my_row]+hash5[my_col];
-            other_value+=hash5[other_row]+hash5[other_col];
-        }
+    int i,j,v=0;
+    for(i=0;i<15;i++){
+        row=col=i;
+        for(j=0;j<15;j++)
+            v+=f(j,j+4)+f(j,j+5)+f2(j,j+4)+f2(j,j+5);
     }
-    for(int i=-10;i<=10;i++) {
-        for(int k=0;k<10;k++) {
-            int my_rdal,my_ldal,other_rdal,other_ldal;
-            for(int j=0;j<5;j++) {
-                my_rdal+=myAI[k+j][k+i]*(1<<(4-j));
-                other_rdal+=otherAI[k+j][k+i]*(1<<(4-j));
-            }
-            my_value+=hash5[my_rdal];
-            other_value+=hash5[other_rdal];
-        }        
-    }
-    for(int i=-10;i<=10;i++) {
-        for(int k=0;k<10;k++) {
-            int my_rdal,my_ldal,other_rdal,other_ldal;
-            for(int j=0;j<5;j++) {
-                my_rdal+=myAI[k+j][k+i]*(1<<(4-j));
-                other_rdal+=otherAI[k+j][k+i]*(1<<(4-j));
-            }
-            my_value+=hash5[my_rdal];
-            other_value+=hash5[other_rdal];
-        }        
-    }
+    for(i=-14;i<=14;i++)
+        for(j=0;j<15;j++)
+            v+=f3(j,i+j,5)+f3(j,i+j,6);
+    for(i=0;i<=28;i++)
+        for(j=0;j<15;j++)
+            v+=f4(j,i-j,5)+f4(j,i-j,6);
+    return v;
+    // int my_value=0,other_value=0;
+    // for(int i=0;i<15;i++) {
+    //     int my_row=myAI[i][0]*16+myAI[i][1]*8+myAI[i][2]*4+myAI[i][3]*2+myAI[i][4];
+    //     int other_row=otherAI[i][0]*16+otherAI[i][1]*8+otherAI[i][2]*4+otherAI[i][3]*2+otherAI[i][4];
+    //     int my_col=myAI[0][i]*16+myAI[1][i]*8+myAI[2][i]*4+myAI[3][i]*2+myAI[4][i];
+    //     int other_col=otherAI[0][i]*16+otherAI[1][i]*8+otherAI[2][i]*4+otherAI[3][i]*2+otherAI[4][i];
 
-    return my_value-other_value;
+    //     my_value=hash5[my_row]+hash5[my_col];
+    //     other_value=hash5[other_row]+hash5[other_col];
+
+    //     for(int j=5;j<15;j++) {
+    //         my_row=((my_row-myAI[i][j-5]*16)*2+myAI[i][j]); //橫
+    //         other_row=((other_row-otherAI[i][j-5]*16)*2+otherAI[i][j]);
+    //         my_col=((my_col-myAI[j-5][i]*16)*2+myAI[j][i]); //豎
+    //         other_col=((other_col-otherAI[j-5][i]*16)*2+myAI[j][i]);
+
+    //         my_value+=hash5[my_row]+hash5[my_col];
+    //         other_value+=hash5[other_row]+hash5[other_col];
+    //     }
+    // }
+    // for(int i=-10;i<=10;i++) {
+    //     for(int k=0;k<10;k++) {
+    //         int my_rdal,my_ldal,other_rdal,other_ldal;
+    //         for(int j=0;j<5;j++) {
+    //             my_rdal+=myAI[k+j][k+i]*(1<<(4-j));
+    //             other_rdal+=otherAI[k+j][k+i]*(1<<(4-j));
+    //         }
+    //         my_value+=hash5[my_rdal];
+    //         other_value+=hash5[other_rdal];
+    //     }        
+    // }
+    // for(int i=4;i<=24;i++) {
+    //     for(int k=0;k<10;k++) {
+    //         int my_rdal,my_ldal,other_rdal,other_ldal;
+    //         for(int j=0;j<5;j++) {
+    //             my_rdal+=myAI[k+j][k+i]*(1<<(4-j));
+    //             other_rdal+=otherAI[k+j][k+i]*(1<<(4-j));
+    //         }
+    //         my_value+=hash5[my_rdal];
+    //         other_value+=hash5[other_rdal];
+    //     }        
+    // }
+
+    // return my_value-other_value;
 }
-int alphabeta(std::array<std::array<int, SIZE>, SIZE> board,int depth,int alpha,int beta,bool maximizingPlayer) {
+int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
+    // for(int i=0;i<15;i++) {
+    //     for(int j=0;j<15;j++) {
+    //         printf("%d",board[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    //   printf("\n");
+    //     printf("\n");
     if(depth==0 || piece+depth>225) return evaluate();
     if(maximizingPlayer) {
         int value=-INF;
@@ -98,13 +157,13 @@ int alphabeta(std::array<std::array<int, SIZE>, SIZE> board,int depth,int alpha,
             for(int j=0;j<15;j++) {
                 if(board[i][j]!=EMPTY || !hasNeighbor(i,j)) continue;
                 board[i][j]=player;
-                myAI[i][j]=1;
-                int val=alphabeta(board,depth-1,alpha,beta,0);
+                simboard[i][j]=1;
+                int val=alphabeta(depth-1,alpha,beta,0);
                 board[i][j]=EMPTY;
-                myAI[i][j]=0;
+                simboard[i][j]=0;
                 if(val>value) {
                     value=val;
-                    x=i,y=j;
+                    if(depth==2) x=i,y=j;
                 }
                 alpha=max(alpha,value);
                 if(alpha>=beta) break;
@@ -117,13 +176,13 @@ int alphabeta(std::array<std::array<int, SIZE>, SIZE> board,int depth,int alpha,
             for(int j=0;j<15;j++) {
                 if(board[i][j]!=EMPTY || !hasNeighbor(i,j)) continue;
                 board[i][j]=(player==1?2:1);
-                otherAI[i][j]=1;
-                int val=min(value,alphabeta(board,depth-1,alpha,beta,1));
+                simboard[i][j]=2;
+                int val=alphabeta(depth-1,alpha,beta,1);
                 board[i][j]=EMPTY;
-                otherAI[i][j]=0;
+                simboard[i][j]=0;
                 if(val<value) {
                     value=val;
-                    x=i,y=j;
+                    if(depth==2) x=i,y=j;
                 }
                 beta=min(beta,value);
                 if(beta<=alpha) break;
@@ -135,9 +194,9 @@ int alphabeta(std::array<std::array<int, SIZE>, SIZE> board,int depth,int alpha,
 }
 void write_valid_spot(std::ofstream& fout) {
     srand(time(NULL));
-    int x, y;
     // Keep updating the output until getting killed.
-    while(true) {
+    //while(true) {
+        int cnt=0;
         for(int i=0;i<15;i++) {
             for(int j=0;j<15;j++) {//(i,j)
                 if(board[i][j]!=EMPTY)
@@ -147,26 +206,63 @@ void write_valid_spot(std::ofstream& fout) {
                     for(int l=-1;l<=1;l++) 
                         if(i+k>=0 && i+k<15 && j+l>=0 && j+l<15)
                             used|=(board[i+k][j+l]!=EMPTY);
-                if(used)
-                    alphabeta(board,6,-INF,INF,1);
+                cnt+=used;
+                //if(used)
+                    //alphabeta(2,-INF,INF,1);
             }
         }
-        if (board[x][y] == EMPTY) {
+        alphabeta(2,-INF,INF,1);
+        if(!cnt){
+            fout << 7 << " " << 7 << std::endl;     
+            // Remember to flush the output to ensure the last action is written to file.
+            fout.flush();
+        }
+        else if (board[x][y] == EMPTY) {
             fout << x << " " << y << std::endl;     
             // Remember to flush the output to ensure the last action is written to file.
             fout.flush();
         }
         piece++;
-    }
+  //  }
 }
 
 int main(int, char** argv) {
-    hash5[12]=70,hash5[10]=60,hash5[6]=70;
-    hash5[26]=300,hash5[7]=500,hash5[28]=500;
-    hash5[14]=5000,hash5[29]=4950,hash5[27]=4900;
-    hash5[23]=4950,hash5[30]=5000,hash5[15]=5000;
-    hash5[31]=99999999;
-    hash6[18]=50,hash6[22]=4800,hash6[26]=4800,hash6[30]=500000;
+    // hash5[12]=70,hash5[10]=60,hash5[6]=70;
+    // hash5[26]=300,hash5[7]=500,hash5[28]=500;
+    // hash5[14]=5000,hash5[29]=4950,hash5[27]=4900;
+    // hash5[23]=4950,hash5[30]=5000,hash5[15]=5000;
+    // hash5[31]=99999999;
+    // hash6[18]=50,hash6[22]=4800,hash6[26]=4800,hash6[30]=500000;
+    hash[211000]=hash[112]=150;
+    hash[122000]=hash[221]=-140;
+    hash[210100]=hash[1012]=250;
+    hash[120200]=hash[2021]=-240;
+    hash[210010]=hash[10012]=200;
+    hash[120020]=hash[20021]=-190;
+    hash[11000]=hash[110]=650;
+    hash[22000]=hash[220]=-640;
+    hash[1010]=hash[10100]=400;
+    hash[2020]=hash[20200]=-390;
+    hash[211100]=hash[1112]=500;
+    hash[122200]=hash[2221]=-490;
+    hash[210110]=hash[11012]=800;
+    hash[120220]=hash[22021]=-790;
+    hash2[10011]=hash2[10101]=600;
+    hash2[20022]=hash2[20202]=-590;
+    hash[10110]=2000;
+    hash[20220]=-1990;
+    hash[11100]=hash[1110]=3000;
+    hash[22200]=hash[2220]=-2990;
+    hash[211110]=hash[11112]=2500;
+    hash[122220]=hash[22221]=-2490;
+    hash2[11101]=3000;
+    hash2[22202]=-2990;
+    hash2[11011]=2600;
+    hash2[22022]=-2590;
+    hash[11110]=300000;
+    hash[22220]=-299990;
+    hash2[11111]=30000000;
+    hash2[22222]=-29999990;
     std::ifstream fin(argv[1]);
     std::ofstream fout(argv[2]);
     read_board(fin);
