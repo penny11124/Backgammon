@@ -13,6 +13,7 @@ enum SPOT_STATE {
     BLACK = 1,
     WHITE = 2
 };
+int cnt;
 int piece;
 int player;
 const int SIZE = 15;
@@ -76,6 +77,7 @@ void read_board(std::ifstream& fin) {
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) {
             fin >> board[i][j];
+            if(board[i][j]!=EMPTY) cnt++;
             if(board[i][j]==player) simboard[i][j]=1;
             else if(board[i][j]==(player==1?2:1)) simboard[i][j]=2;
         }
@@ -142,14 +144,6 @@ int evaluate() {
     // return my_value-other_value;
 }
 int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
-    // for(int i=0;i<15;i++) {
-    //     for(int j=0;j<15;j++) {
-    //         printf("%d",board[i][j]);
-    //     }
-    //     printf("\n");
-    // }
-    //   printf("\n");
-    //     printf("\n");
     if(depth==0 || piece+depth>225) return evaluate();
     if(maximizingPlayer) {
         int value=-INF;
@@ -195,22 +189,6 @@ int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
 void write_valid_spot(std::ofstream& fout) {
     srand(time(NULL));
     // Keep updating the output until getting killed.
-    //while(true) {
-        int cnt=0;
-        for(int i=0;i<15;i++) {
-            for(int j=0;j<15;j++) {//(i,j)
-                if(board[i][j]!=EMPTY)
-                    continue;
-                bool used=0;
-                for(int k=-1;k<=1;k++) 
-                    for(int l=-1;l<=1;l++) 
-                        if(i+k>=0 && i+k<15 && j+l>=0 && j+l<15)
-                            used|=(board[i+k][j+l]!=EMPTY);
-                cnt+=used;
-                //if(used)
-                    //alphabeta(2,-INF,INF,1);
-            }
-        }
         alphabeta(3,-INF,INF,1);
         if(!cnt){
             fout << 7 << " " << 7 << std::endl;     
@@ -223,7 +201,6 @@ void write_valid_spot(std::ofstream& fout) {
             fout.flush();
         }
         piece++;
-  //  }
 }
 
 int main(int, char** argv) {
