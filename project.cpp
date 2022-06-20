@@ -163,7 +163,7 @@ int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
                 simboard[i][j]=0;
                 if(val>value) {
                     value=val;
-                    if(depth==4) x=i,y=j;
+                    if(depth==3) x=i,y=j;
                 }
                 alpha=max(alpha,value);
                 if(alpha>=beta) break;
@@ -182,7 +182,7 @@ int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
                 simboard[i][j]=0;
                 if(val<value) {
                     value=val;
-                    if(depth==4) x=i,y=j;
+                    if(depth==3) x=i,y=j;
                 }
                 beta=min(beta,value);
                 if(beta<=alpha) break;
@@ -211,7 +211,7 @@ void write_valid_spot(std::ofstream& fout) {
                     //alphabeta(2,-INF,INF,1);
             }
         }
-        alphabeta(4,-INF,INF,1);
+        alphabeta(3,-INF,INF,1);
         if(!cnt){
             fout << 7 << " " << 7 << std::endl;     
             // Remember to flush the output to ensure the last action is written to file.
@@ -227,42 +227,36 @@ void write_valid_spot(std::ofstream& fout) {
 }
 
 int main(int, char** argv) {
-    // hash5[12]=70,hash5[10]=60,hash5[6]=70;
-    // hash5[26]=300,hash5[7]=500,hash5[28]=500;
-    // hash5[14]=5000,hash5[29]=4950,hash5[27]=4900;
-    // hash5[23]=4950,hash5[30]=5000,hash5[15]=5000;
-    // hash5[31]=99999999;
-    // hash6[18]=50,hash6[22]=4800,hash6[26]=4800,hash6[30]=500000;
-    hash[211000]=hash[112]=150;
-    hash[122000]=hash[221]=-140;
-    hash[210100]=hash[1012]=250;
-    hash[120200]=hash[2021]=-240;
-    hash[210010]=hash[10012]=200;
-    hash[120020]=hash[20021]=-190;
-    hash[11000]=hash[110]=650;
-    hash[22000]=hash[220]=-640;
-    hash[1010]=hash[10100]=400;
-    hash[2020]=hash[20200]=-390;
-    hash[211100]=hash[1112]=500;
-    hash[122200]=hash[2221]=-490;
-    hash[210110]=hash[11012]=800;
-    hash[120220]=hash[22021]=-790;
-    hash2[10011]=hash2[10101]=600;
-    hash2[20022]=hash2[20202]=-590;
-    hash[10110]=2000;
-    hash[20220]=-1990;
-    hash[11100]=hash[1110]=3000;
-    hash[22200]=hash[2220]=-2990;
-    hash[211110]=hash[11112]=2500;
-    hash[122220]=hash[22221]=-2490;
-    hash2[11101]=3000;
-    hash2[22202]=-2990;
-    hash2[11011]=2600;
-    hash2[22022]=-2590;
-    hash[11110]=300000;
-    hash[22220]=-299990;
-    hash2[11111]=30000000;
-    hash2[22222]=-29999990;
+    hash[211000]=hash[112]=15; //死二
+    hash[122000]=hash[221]=-16;
+    hash[210100]=hash[1012]=25; //死二
+    hash[120200]=hash[2021]=-26;
+    hash[210010]=hash[10012]=20; //死二
+    hash[120020]=hash[20021]=-21;
+    hash[11000]=hash[110]=650; //活二
+    hash[22000]=hash[220]=-660;
+    hash[1010]=hash[10100]=400; //活二
+    hash[2020]=hash[20200]=-410; 
+    hash[211100]=hash[1112]=500; //死三
+    hash[122200]=hash[2221]=-510;
+    hash[210110]=hash[11012]=800; //死三
+    hash[120220]=hash[22021]=-810;
+    hash2[10011]=hash2[10101]=600; //死三
+    hash2[20022]=hash2[20202]=-610;
+    hash[10110]=20000; //活三
+    hash[20220]=-19900*2;
+    hash[11100]=hash[1110]=30000; //活三
+    hash[22200]=hash[2220]=-29900*2;
+    hash[211110]=hash[11112]=25000; //死四
+    hash[122220]=hash[22221]=-24900*2;
+    hash2[11101]=30000; //死四
+    hash2[22202]=-29900*2;
+    hash2[11011]=26000; //死四
+    hash2[22022]=-25900*2;
+    hash[11110]=300000*2; //活四
+    hash[22220]=-299990*4;
+    hash2[11111]=30000000; //五連
+    hash2[22222]=-299999990;
     std::ifstream fin(argv[1]);
     std::ofstream fout(argv[2]);
     read_board(fin);
