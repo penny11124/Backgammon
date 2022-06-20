@@ -163,7 +163,7 @@ int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
                 simboard[i][j]=0;
                 if(val>value) {
                     value=val;
-                    if(depth==2) x=i,y=j;
+                    if(depth==4) x=i,y=j;
                 }
                 alpha=max(alpha,value);
                 if(alpha>=beta) break;
@@ -182,7 +182,7 @@ int alphabeta(int depth,int alpha,int beta,bool maximizingPlayer) {
                 simboard[i][j]=0;
                 if(val<value) {
                     value=val;
-                    if(depth==2) x=i,y=j;
+                    if(depth==4) x=i,y=j;
                 }
                 beta=min(beta,value);
                 if(beta<=alpha) break;
@@ -211,7 +211,7 @@ void write_valid_spot(std::ofstream& fout) {
                     //alphabeta(2,-INF,INF,1);
             }
         }
-        alphabeta(2,-INF,INF,1);
+        alphabeta(4,-INF,INF,1);
         if(!cnt){
             fout << 7 << " " << 7 << std::endl;     
             // Remember to flush the output to ensure the last action is written to file.
